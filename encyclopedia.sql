@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 12.16 (Ubuntu 12.16-0ubuntu0.20.04.1)
--- Dumped by pg_dump version 12.16 (Ubuntu 12.16-0ubuntu0.20.04.1)
+-- Dumped from database version 14.9 (Ubuntu 14.9-0ubuntu0.22.04.1)
+-- Dumped by pg_dump version 14.9 (Ubuntu 14.9-0ubuntu0.22.04.1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -62,6 +62,40 @@ ALTER SEQUENCE public.animals_id_seq OWNED BY public.animals.id;
 
 
 --
+-- Name: continents; Type: TABLE; Schema: public; Owner: nickperry12
+--
+
+CREATE TABLE public.continents (
+    id integer NOT NULL,
+    continent_name character varying(50)
+);
+
+
+ALTER TABLE public.continents OWNER TO nickperry12;
+
+--
+-- Name: continents_id_seq; Type: SEQUENCE; Schema: public; Owner: nickperry12
+--
+
+CREATE SEQUENCE public.continents_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.continents_id_seq OWNER TO nickperry12;
+
+--
+-- Name: continents_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: nickperry12
+--
+
+ALTER SEQUENCE public.continents_id_seq OWNED BY public.continents.id;
+
+
+--
 -- Name: countries; Type: TABLE; Schema: public; Owner: nickperry12
 --
 
@@ -70,7 +104,7 @@ CREATE TABLE public.countries (
     name character varying(50) NOT NULL,
     capital character varying(50) NOT NULL,
     population integer,
-    continent character varying(50)
+    continent_id integer
 );
 
 
@@ -144,6 +178,13 @@ ALTER TABLE ONLY public.animals ALTER COLUMN id SET DEFAULT nextval('public.anim
 
 
 --
+-- Name: continents id; Type: DEFAULT; Schema: public; Owner: nickperry12
+--
+
+ALTER TABLE ONLY public.continents ALTER COLUMN id SET DEFAULT nextval('public.continents_id_seq'::regclass);
+
+
+--
 -- Name: countries id; Type: DEFAULT; Schema: public; Owner: nickperry12
 --
 
@@ -171,10 +212,29 @@ COPY public.animals (id, name, binomial_name, max_weight, max_age, conversion_st
 
 
 --
+-- Data for Name: continents; Type: TABLE DATA; Schema: public; Owner: nickperry12
+--
+
+COPY public.continents (id, continent_name) FROM stdin;
+1	Africa
+2	Asia
+3	Europe
+4	North America
+5	South America
+\.
+
+
+--
 -- Data for Name: countries; Type: TABLE DATA; Schema: public; Owner: nickperry12
 --
 
-COPY public.countries (id, name, capital, population, continent) FROM stdin;
+COPY public.countries (id, name, capital, population, continent_id) FROM stdin;
+11	Brazil	Brasilia	208385000	5
+12	Egypt	Cairo	96308900	1
+13	France	Paris	67158000	3
+14	Germany	Berlin	82349400	3
+15	Japan	Tokyo	126672000	2
+16	USA	Washington D.C.	325365189	4
 \.
 
 
@@ -199,10 +259,17 @@ SELECT pg_catalog.setval('public.animals_id_seq', 5, true);
 
 
 --
+-- Name: continents_id_seq; Type: SEQUENCE SET; Schema: public; Owner: nickperry12
+--
+
+SELECT pg_catalog.setval('public.continents_id_seq', 5, true);
+
+
+--
 -- Name: countries_id_seq; Type: SEQUENCE SET; Schema: public; Owner: nickperry12
 --
 
-SELECT pg_catalog.setval('public.countries_id_seq', 4, true);
+SELECT pg_catalog.setval('public.countries_id_seq', 16, true);
 
 
 --
@@ -213,11 +280,27 @@ SELECT pg_catalog.setval('public.famous_people_id_seq', 7, true);
 
 
 --
+-- Name: continents continents_pkey; Type: CONSTRAINT; Schema: public; Owner: nickperry12
+--
+
+ALTER TABLE ONLY public.continents
+    ADD CONSTRAINT continents_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: countries countries_name_key; Type: CONSTRAINT; Schema: public; Owner: nickperry12
 --
 
 ALTER TABLE ONLY public.countries
     ADD CONSTRAINT countries_name_key UNIQUE (name);
+
+
+--
+-- Name: countries countries_continent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: nickperry12
+--
+
+ALTER TABLE ONLY public.countries
+    ADD CONSTRAINT countries_continent_id_fkey FOREIGN KEY (continent_id) REFERENCES public.continents(id);
 
 
 --
